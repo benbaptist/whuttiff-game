@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <h1>Welcome.</h1>
+    <a href="/create_game">Create a new game</a>
+
+    <hr/>
+    {% for game in games %}
+        <a href="/game/{{ game.id }}">{{ game.id }}</a>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Whuttiff</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="author" content="name">
+        <meta name="description" content="description here">
+        <meta name="keywords" content="keywords,here">
+
+        <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon">
+
+        <!-- <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script> -->
+
+        <!-- {% if game %}
+            <script type="text/javascript" charset="utf-8">
+                var game_id = "{{ game.id }}"
+            </script>
+        {% endif %} -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+        <link href="/static/css/custom.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        {% block head %}{% endblock %}
+    </head>
+    <body>
+        <header>
+          <div class="navbar navbar-dark bg-dark shadow-sm">
+            <div class="container">
+              <a href="/" class="navbar-brand d-flex align-items-center">
+                <strong>The Whuttiff Game</strong>
+              </a>
+            </div>
+          </div>
+        </header>
+
+        <main>
+            <section class="py-5 text-center container">
+                {% block body %}{% endblock %}
+            </section>
+        </main>
+    </body>
+</html>

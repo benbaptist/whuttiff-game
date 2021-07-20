@@ -1,0 +1,339 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<script>
+    var game_id = "{{ game.id }}"
+
+    initialize_game = function(){
+        if(localStorage.__imagineiff_player_name != undefined){
+            $("#player_name")[0].value = localStorage.__imagineiff_player_name
+        }
+
+        if(localStorage.__imagineiff_game_id != game_id){
+            console.log("Game ID does not match, starting fresh")
+
+            reset_data()
+
+            switch_screens("pick_name")
+            return
+        }
+
+        switch_screens("loading")
+
+        setInterval(game_loop, 500)
+    }
+
+    call = function(method, args){
+        return $.get("/ajax/" + method +
+            "?game_id=" + localStorage.__imagineiff_game_id +
+            "&player_id=" + localStorage.__imagineiff_player_id +
+            "&" + args)
+    }
+
+    last_screen = null
+
+    switch_screens = function(screen){
+        if(last_screen == screen) return
+
+        $("#loading").addClass("hide")
+        $("#pick_name").addClass("hide")
+        $("#pregame").addClass("hide")
+        $("#question").addClass("hide")
+        $("#results").addClass("hide")
+
+        switch(screen){
+            case "pregame":
+                $("#pregame").removeClass("hide")
+                break
+
+            case "pick_name":
+                $("#pick_name").removeClass("hide")
+                break
+
+            case "loading":
+                $("#loading").removeClass("hide")
+                break
+
+            case "question":
+                $("#question").removeClass("hide")
+                draw_questions_screen()
+                break
+
+            case "results":
+                $("#results").removeClass("hide")
+
+                // draw results screen
+                var question = state.payload.question
+                $("#results-question-text").text(question.text)
+                $("#results-answer").text(question.options[state.payload.winning_answer].text)
+
+                $("#answers").html("")
+
+                for(answer_id in state.payload.tally){
+                    // var answer_id = state.payload.answers[player_id]
+                    // var player = get_player(player_id)
+                    // var player_name = player.name
+                    var count = state.payload.tally[answer_id][0]
+                    var percent = state.payload.tally[answer_id][1]
+                    var option = question.options[answer_id].text
+
+                    $("#answers").append(
+                        $("<tr>")
+                            .append(
+                                $("<td>")
+                                    .text(option)
+                            )
+                            .append(
+                                $("<td>")
+                                    .append(
+                                        $("<div>")
+                                            .addClass("progress")
+                                            .attr("style", "margin: 25px;")
+                                            .append(
+                                                $("<div>")
+                                                    .addClass(answer_id == state.payload.winning_answer ? "progress-bar bg-success" : "progress-bar bg-warning")
+                                                    .attr("style", "width: " + percent * 100 + "%;")
+                                            )
+                                    )
+                            )
+                    )
+
+                    // $("#answers").append(player_name + " voted for " + option + "<br/>")
+                }
+
+                // $("#answers").text(state.payload.answers)
+                break
+        }
+
+        last_screen = screen
+    }
+
+    game_loop = function(){
+        // poll latest game info
+        var data = call("status")
+        .done(function(data){
+            var payload = JSON.parse(data)
+
+            players = payload.players
+
+            // draw player list
+            $("#player_list").html("")
+            for(i in payload.players){
+                var player = payload.players[i]
+                var el = $("<li>")
+                    .html(player.last_ping > 3 ? player.name + " <i style='color:gray;'>(bad connection)</i>" : player.name)
+                    .addClass("list-group-item")
+
+                $("#player_list").append(el)
+            }
+
+            state = payload.state
+
+            switch(state.name){
+                case "results":
+                    var timeleft = 60 - Math.floor(state.payload.duration)
+                    if(timeleft < 0) var timeleft = 0
+
+                    $("#results-seconds").text(timeleft)
+                    break
+            }
+
+            switch_screens(payload.state.name)
+        })
+        .fail(function(){
+            window.location = "/?error"
+        })
+    }
+
+    draw_questions_screen = function(){
+        // draw questions screen
+        var question = state.payload.question
+
+        $("#question-text").text(question.text)
+
+        // Reset "submit answer" button to default
+        $("#submit_answer_btn_spinner").addClass("hide")
+        $("#submit_answer_btn").removeAttr("disabled")
+
+        $("#options").html("")
+        for(i in question.options){
+            var option = question.options[i]
+
+            $("#options").append(
+                $("<div>")
+                    .addClass("form-check")
+                    .append(
+                        $("<input>")
+                            .attr("type", "radio")
+                            .attr("id", option.text)
+                            .attr("value", i)
+                            .addClass("form-check-input")
+                            .attr("name", "question-answer")
+                    )
+                    .append(
+                        $("<label>")
+                            .text(option.text)
+                            .addClass("form-check-label")
+                            .attr("for", option.text)
+                    )
+            )
+        }
+    }
+
+    start_game = function(){
+        call("start")
+    }
+
+    submit_answer = function(){
+        var answer = Number($("[name=question-answer]:checked").val())
+
+        call("submit_answer", "answer=" + answer)
+
+        $("#submit_answer_btn_spinner").removeClass("hide")
+        $("#submit_answer_btn").attr("disabled", "disabled")
+    }
+
+    get_player = function(id){
+        for(i in players){
+            if(players[i].id == id) return players[i]
+        }
+    }
+
+    skip_results = function(){
+        call("skip_results")
+    }
+
+    reset_data = function(){
+        delete localStorage.__imagineiff_player_id
+        delete localStorage.__imagineiff_game_id
+    }
+
+    set_name = function(){
+        var name = $("#player_name")[0].value
+
+        $("#save_name_btn_spinner").removeClass("hide")
+        $("#save_name_btn").attr("disabled", "disabled")
+        $("#save_name_error").addClass("hide")
+
+        $.get("/ajax/join?game_id=" + game_id + "&player_name=" + name)
+        .done(function(data){
+            // good to go, grab player id from here
+            var payload = JSON.parse(data)
+
+            var player_name = payload.player.name
+            var player_id = payload.player.id
+            var game_id = payload.game.id
+
+            localStorage.__imagineiff_player_name = player_name
+            localStorage.__imagineiff_player_id = player_id
+            localStorage.__imagineiff_game_id = game_id
+
+            document.cookie = "game_player=" + game_id + "_" + player_id
+            console.log("Our player ID is " + player_id)
+
+            initialize_game()
+        })
+        .fail(function(data){
+            // no bueno, reset button
+            $("#save_name_btn_spinner").addClass("hide")
+            $("#save_name_btn").removeAttr("disabled")
+            $("#save_name_error").removeClass("hide")
+            $("#save_name_error").text(data.text)
+        })
+        // localStorage.__imagineiff_name = name
+    }
+
+    $(document).ready(function(){
+        initialize_game()
+    })
+</script>
+{% endblock %}
+
+{% block body %}
+    <div id="loading">
+        <div class="spinner-grow" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <br/>Hold your horses.
+    </div>
+
+    <div id="pick_name" class="hide">
+        <h3>You'll need a name before we can start.</h3>
+
+        <div class="alert alert-danger hide" role="alert" id="save_name_error">
+
+        </div>
+
+        <div class="mb-3">
+          <label for="player_name" class="form-label">Player Name</label>
+          <input type="text" class="form-control" id="player_name" placeholder="Billy Bob, Bonkers Boop, etc...">
+        </div>
+
+        <button onclick="set_name()" class="btn btn-primary" id="save_name_btn">
+            <div class="hide spinner-border spinner-border-sm" role="status" id="save_name_btn_spinner">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            Save Name
+        </button>
+    </div>
+
+    <div id="pregame" class="hide">
+        <div class="spinner-grow" role="status">
+          <span class="visually-hidden">Waiting for players.</span>
+        </div>
+        <h1>Waiting for players to join...</h1>
+        ... and for the games to begin!
+
+        <h3>Players</h3>
+        <ul class="list-group" id="player_list"></ul>
+
+        <button class="btn btn-primary" onclick="start_game()">Start Game</button>
+    </div>
+
+    <div id="question" class="hide">
+        <h1 id="question-text"></h1>
+        <div id="options"></div>
+
+        <button class="btn btn-primary" onclick="submit_answer()" id="submit_answer_btn">
+            <div class="hide spinner-border spinner-border-sm" role="status" id="submit_answer_btn_spinner">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            Submit Answer
+        </button>
+    </div>
+
+    <div id="results" class="hide">
+        <h1>The results are in!</h1>
+        <h4 id="results-question-text">Imagineiff Ben was a poop.</h4>
+        <h4 id="results-answer" style="color: green;">A cat!</h4>
+
+        <div>
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 50%;"></th>
+                        <th style="width: 50%;"></th>
+                    </tr>
+                </thead>
+                <tbody id="answers">
+                    <!-- <tr>
+                        <td>Ford F-150</td>
+                        <td>
+                            <div class="progress" style="margin: 25px;">
+                              <div class="progress-bar bg-success" style="width: 25%">
+                                  <div style="float: left;">
+                                      5 votes
+                                  </div>
+                              </div>
+                            </div>
+                        </td>
+                    </tr> -->
+                </tbody>
+            </table>
+        </div>
+
+        <button class="btn btn-primary" onclick="skip_results()">
+            Skip Now (or wait <span id="results-seconds"></span> seconds)
+        </button>
+    </div>
+{% endblock %}

@@ -59,6 +59,7 @@ Questions = [
             {"text": "Chilly Cheese Dog"},
             {"text": "Corn Dog"},
             {"text": "Dip 'n' Dots"},
+            {"text": "Cotton Candy"}
         ]
     },
     {

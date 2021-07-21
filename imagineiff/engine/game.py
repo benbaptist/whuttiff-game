@@ -27,6 +27,8 @@ class Game:
         self.removed_players = []
         self.state = StatePregame()
 
+        self.time_since_no_players = None
+
         self.question = None
 
     @property
@@ -74,6 +76,14 @@ class Game:
     def tick(self):
         # Check if no players exist, and if so, pause
         if len(self.players) < 1:
+            if not self.time_since_no_players:
+                self.time_since_no_players = time.time()
+
+            # If it goes ten minutes without any players, consider
+            # this game dead and destroy it.
+            if time.time() - self.time_since_no_players > 60 * 10:
+                print("This game needs to be removed.")
+
             return
 
         # Check player pings, remove inactive players

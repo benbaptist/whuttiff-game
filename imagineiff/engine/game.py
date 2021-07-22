@@ -26,6 +26,7 @@ class Game:
         self.players = []
         self.removed_players = []
         self.state = StatePregame()
+        self.dead = False
 
         self.time_since_no_players = None
 
@@ -83,6 +84,7 @@ class Game:
             # this game dead and destroy it.
             if time.time() - self.time_since_no_players > 60 * 10:
                 print("This game needs to be removed.")
+                self.dead = True
 
             return
 

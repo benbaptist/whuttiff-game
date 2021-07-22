@@ -24,4 +24,9 @@ class Engine:
 
     def tick(self):
         for game in self.games:
+
+            if game.dead:
+                self.games.remove(game)
+                continue
+
             game.tick()

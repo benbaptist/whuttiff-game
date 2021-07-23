@@ -85,7 +85,8 @@ def method(method):
                 "name": str(g.game.state),
                 "payload": g.game.state.json
             },
-            "players": players
+            "players": players,
+            "is_admin": g.player.is_admin
         })
     else:
         return json.dumps({

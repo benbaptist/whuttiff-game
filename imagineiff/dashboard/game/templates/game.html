@@ -120,11 +120,14 @@
             $("#player_list").html("")
             for(i in payload.players){
                 var player = payload.players[i]
-                var el = $("<li>")
-                    .html(player.last_ping > 3 ? player.name + " <i style='color:gray;'>(bad connection)</i>" : player.name)
-                    .addClass("list-group-item")
-
-                $("#player_list").append(el)
+                $("#player_list").append(
+                    $("<tr>")
+                        .append(
+                            $("<td>")
+                                .html(player.last_ping > 3 ? player.name + " <i style='color:gray;'>(bad connection)</i>" : player.name)
+                                .addClass("list-group-item")
+                        )
+                )
             }
 
             state = payload.state
@@ -136,6 +139,13 @@
 
                     $("#results-seconds").text(timeleft)
                     break
+            }
+
+            // if admin, allow access to admin panel
+            if(payload.is_admin){
+                $("#pregame-admin").removeClass("hide")
+            }else{
+                $("#pregame-admin").addClass("hide")
             }
 
             switch_screens(payload.state.name)
@@ -284,8 +294,34 @@
         <h1>Waiting for players to join...</h1>
         ... and for the games to begin!
 
+        <div id="pregame-admin" class="hide">
+            <h3 data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Game Settings</h3>
+
+            <div class="collapse" id="collapseExample">
+
+                <!-- <div class="input-group mb-3">
+                  <span class="input-group-text">Game Name</span>
+                  <input type="text" class="form-control" id="pregame-admin-game-name" value="{{ game.name }}">
+                </div> -->
+
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="pregame-admin-game-name" value="{{ game.name }}">
+                  <label for="floatingInput">Game Name</label>
+                </div>
+
+                <label for="customRange2" class="form-label">Maximum Players</label>
+                <input type="range" class="form-range" min="2" max="50" id="pregame-admin-max-players">
+
+            </div>
+        </div>
+
         <h3>Players</h3>
-        <ul class="list-group" id="player_list"></ul>
+        <!-- <ul class="list-group" id="player_list"></ul> -->
+        <table class="table table-borderless">
+            <tbody id="player_list">
+
+            </tbody>
+        </table>
 
         <button class="btn btn-primary" onclick="start_game()">Start Game</button>
     </div>

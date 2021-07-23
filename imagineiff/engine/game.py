@@ -12,6 +12,8 @@ from imagineiff.engine.states.pregame import StatePregame
 from imagineiff.engine.states.statequestion import StateQuestion
 from imagineiff.engine.states.results import StateResults
 
+from imagineiff.words import generate_sentence
+
 STATE_PREGAME = "pregame" # Pre-game lobby
 STATE_QUESTION = "question" # Asking the question, people are answering
 STATE_RESULTS = "results" # The results are in!
@@ -22,6 +24,8 @@ class Game:
         self.id = str(uuid.UUID(bytes=os.urandom(16)))
 
         self._questions = copy.deepcopy(Questions)
+
+        self.name = generate_sentence(2)
 
         self.players = []
         self.removed_players = []
@@ -64,7 +68,10 @@ class Game:
         self.pick_question()
 
     def join(self, name):
-        player = Player(name)
+        player = Player(
+            name,
+            len(self.players) == 0 # Makes player admin if no other players
+        )
         self.players.append(player)
 
         return player

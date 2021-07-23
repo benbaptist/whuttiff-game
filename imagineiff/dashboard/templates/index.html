@@ -6,6 +6,9 @@
 
     <hr/>
     {% for game in games %}
-        <a href="/game/{{ game.id }}">{{ game.players|length }} players</a><br/>
+        <a href="/game/{{ game.id }}">
+            {{ game.name }}
+            <span class="badge bg-secondary">{{ game.players|length }} players</span>
+            </a><br/>
     {% endfor %}
 {% endblock %}

@@ -1,0 +1,13 @@
+- Handle ties
+- Better UI
+    - Pre-Game Settings
+        - Private/Public
+        - Game name
+        - Max players
+    - Upon submitting answer, it should remove the radio buttons and make it obvious that the answer was submitted
+    - Player list during game
+        - Ability to kick players from game
+        - Shows when people are lagging
+- Chromecast Support
+- Fancier animations
+- Limit to 3 players

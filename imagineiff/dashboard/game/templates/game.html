@@ -299,18 +299,15 @@
 
             <div class="collapse" id="collapseExample">
 
-                <!-- <div class="input-group mb-3">
-                  <span class="input-group-text">Game Name</span>
-                  <input type="text" class="form-control" id="pregame-admin-game-name" value="{{ game.name }}">
-                </div> -->
-
                 <div class="form-floating mb-3">
                   <input type="text" class="form-control" id="pregame-admin-game-name" value="{{ game.name }}">
                   <label for="floatingInput">Game Name</label>
                 </div>
 
-                <label for="customRange2" class="form-label">Maximum Players</label>
-                <input type="range" class="form-range" min="2" max="50" id="pregame-admin-max-players">
+                <div class="form-floating mb-3">
+                  <label for="pregame-admin-max-players" class="form-label">Maximum Players (50)</label>
+                  <input type="range" class="form-range" min="2" max="50" id="pregame-admin-max-players">
+                </div>
 
             </div>
         </div>

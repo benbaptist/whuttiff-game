@@ -14,18 +14,13 @@ from imagineiff.engine.states.results import StateResults
 
 from imagineiff.words import generate_sentence
 
-STATE_PREGAME = "pregame" # Pre-game lobby
-STATE_QUESTION = "question" # Asking the question, people are answering
-STATE_RESULTS = "results" # The results are in!
-STATE_WIN = "winner" # ???
-
 class Game:
     def __init__(self):
         self.id = str(uuid.UUID(bytes=os.urandom(16)))
 
         self._questions = copy.deepcopy(Questions)
 
-        self.name = generate_sentence(2)
+        self._name = generate_sentence(2)
 
         self.players = []
         self.removed_players = []
@@ -37,9 +32,19 @@ class Game:
         self.question = None
 
     @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+        self.log.info("Renaming to: " % value)
+
+    @property
     def questions(self):
         if len(self._questions) < 1:
-            print("Question pool empty, resetting")
+            self.log.info("Question pool empty, resetting")
             self._questions = copy.deepcopy(Questions)
 
         return self._questions
@@ -47,6 +52,11 @@ class Game:
     def start(self):
         assert type(self.state) == StatePregame, "Game already started."
         assert len(self.players) > 1, "Too few players."
+
+        self.log.info("Starting game. Name is %s" % self.name)
+
+        for player in self.players:
+            player.reset_game()
 
         self.pick_question()
 
@@ -65,6 +75,14 @@ class Game:
     def skip_results(self):
         assert type(self.state) == StateResults, "Not in results?"
 
+        self.log.info("Skipping results screen")
+
+        self.pick_question()
+
+    def skip_question(self):
+        assert type(self.state) == StateQuestion, "Not in question?"
+
+        self.log.info("Skipping question")
         self.pick_question()
 
     def join(self, name):
@@ -81,6 +99,15 @@ class Game:
             if player.id == player_id:
                 return player
 
+        for player in self.removed_players:
+            if player.id == player_id:
+                self.log.info("Bringing a dead player back to life!")
+
+                self.players.append(player)
+                self.removed_players.remove(player)
+
+                return player
+
     def tick(self):
         # Check if no players exist, and if so, pause
         if len(self.players) < 1:
@@ -90,7 +117,7 @@ class Game:
             # If it goes ten minutes without any players, consider
             # this game dead and destroy it.
             if time.time() - self.time_since_no_players > 60 * 10:
-                print("This game needs to be removed.")
+                self.log.warning("This game needs to be removed.")
                 self.dead = True
 
             return
@@ -98,7 +125,7 @@ class Game:
         # Check player pings, remove inactive players
         for player in self.players:
             if player.last_ping > 60:
-                print("Removing inactivate player %s" % player)
+                self.log.warning("Removing inactivate player %s" % player)
 
                 self.removed_players.append(player)
                 self.players.remove(player)
@@ -109,9 +136,9 @@ class Game:
             # Check if all players answered
             if len(self.players) == len(question.answers):
                 self.state = StateResults(question)
-                print("Erribuddeh answered!!")
+                self.log.info("Everyone answered.")
 
         if type(self.state) == StateResults:
             if self.state.duration > 60:
-                print("Time to move on from results..")
+                self.log.info("Time to move on from results..")
                 self.skip_results()

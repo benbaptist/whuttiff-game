@@ -14,6 +14,7 @@ class StateResults:
             "answers": self.question.answers,
             "duration": self.duration,
             "winning_answer": self.winning_answer,
+            "winners": self.winners,
             "tally": self.tally
         }
 
@@ -24,6 +25,10 @@ class StateResults:
     @property
     def winning_answer(self):
         return self.question.winning_answer
+
+    @property
+    def winners(self):
+        return self.question.winners
 
     @property
     def duration(self):

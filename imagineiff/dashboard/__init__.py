@@ -75,7 +75,7 @@ class Dashboard:
                 return "<h1>Internal Server Error</h1>", 500
             except:
                 traceback.print_exc()
-                return "<h1>Stuff went VERY south. Contact an administrator, please.</h1>", 500
+                return "<h1>Something went VERY south. Contact an administrator, please.</h1>", 500
     def register_blueprints(self):
         self.app.register_blueprint(blueprint_game)
         self.app.register_blueprint(blueprint_ajax)

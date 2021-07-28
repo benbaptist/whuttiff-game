@@ -11,9 +11,12 @@ class Engine:
 
     def new_game(self):
         game = Game()
-        self.games.append(game)
 
+        log = self.main.log_manager.get_logger("GameEngine/" + game.id)
+        game.log = log
         self.log.info("Creating new game '%s'" % game.id)
+
+        self.games.append(game)
 
         return game
 

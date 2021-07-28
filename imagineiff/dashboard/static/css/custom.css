@@ -1,7 +1,16 @@
+body{
+    background-color: #ecf0f1 !important;
+}
+
 .hide{
     display: none !important;
 }
 
 .show{
     display: inherit;
+}
+
+.collapse-header{
+    color: #3498db;
+    cursor: pointer;
 }

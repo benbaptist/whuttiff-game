@@ -51,6 +51,9 @@ def method(method):
         if not g.game:
             return "Nope", 404
 
+        if not g.player.is_admin:
+            return "Unauthorized", 403
+
         g.game.start()
 
     elif method == "submit_answer":
@@ -61,8 +64,41 @@ def method(method):
 
         g.game.state.question.answer(g.player, answer)
 
+    elif method == "skip_question":
+        if not g.player.is_admin:
+            return "Unauthorized", 403
+            
+        g.game.skip_question()
+
     elif method == "skip_results":
+        if not g.player.is_admin:
+            return "Unauthorized", 403
+
         g.game.skip_results()
+
+    elif method == "set-game-name":
+        if not g.game:
+            return "Nope", 404
+
+        if not g.player.is_admin:
+            return "Unauthorized", 403
+
+        allowed_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        allowed_chars += "0123456789_-.,[]{}|!?;:'\" "
+
+        game_name = request.args["value"]
+
+        for char in game_name:
+            if char not in allowed_chars:
+                return "Bad character", 400
+
+        if len(game_name) > 32:
+            return "Too long", 400
+
+        if len(game_name) < 4:
+            return "Must be at least 5 characters", 400
+
+        g.game.name = game_name
 
     elif method == "status":
         if not g.game:
@@ -73,8 +109,17 @@ def method(method):
             players.append({
                 "name": player.name,
                 "id": player.id,
-                "last_ping": player.last_ping
+                "last_ping": player.last_ping,
+                "is_admin": player.is_admin
             })
+
+        scoreboard = {}
+
+        for player in g.game.players:
+            if player.score == None:
+                return
+
+            scoreboard[player.id] = player.score
 
         # if type(g.game.state) == StateQuestion:
         #     question = g.game.state.json
@@ -85,8 +130,10 @@ def method(method):
                 "name": str(g.game.state),
                 "payload": g.game.state.json
             },
+            "game_name": g.game.name,
             "players": players,
-            "is_admin": g.player.is_admin
+            "is_admin": g.player.is_admin,
+            "scoreboard": scoreboard
         })
     else:
         return json.dumps({

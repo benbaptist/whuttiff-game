@@ -36,6 +36,19 @@ class Question:
         return most_id
 
     @property
+    def winners(self):
+        winners = []
+        winning_answer = self.winning_answer
+
+        for player_id in self.answers:
+            answer = self.answers[player_id]
+
+            if answer == winning_answer:
+                winners.append(player_id)
+
+        return winners
+
+    @property
     def text(self):
         return \
             self.question["question"].replace("__name__", self.about.name)

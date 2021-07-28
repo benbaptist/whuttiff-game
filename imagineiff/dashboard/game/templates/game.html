@@ -3,6 +3,7 @@
 {% block head %}
 <script>
     var game_id = "{{ game.id }}"
+    var game_name = "{{ game.name }}"
 
     initialize_game = function(){
         if(localStorage.__imagineiff_player_name != undefined){
@@ -24,6 +25,8 @@
     }
 
     call = function(method, args){
+        if(args == undefined) var args = ""
+
         return $.get("/ajax/" + method +
             "?game_id=" + localStorage.__imagineiff_game_id +
             "&player_id=" + localStorage.__imagineiff_player_id +
@@ -32,8 +35,11 @@
 
     last_screen = null
 
-    switch_screens = function(screen){
-        if(last_screen == screen) return
+    switch_screens = function(screen, force_redraw){
+        if(force_redraw == undefined) var force_redraw = false
+
+        if(!force_redraw)
+            if(last_screen == screen) return
 
         $("#loading").addClass("hide")
         $("#pick_name").addClass("hide")
@@ -68,6 +74,7 @@
                 $("#results-answer").text(question.options[state.payload.winning_answer].text)
 
                 $("#answers").html("")
+                $("#everybody-answers").html("")
 
                 for(answer_id in state.payload.tally){
                     // var answer_id = state.payload.answers[player_id]
@@ -93,12 +100,31 @@
                                                 $("<div>")
                                                     .addClass(answer_id == state.payload.winning_answer ? "progress-bar bg-success" : "progress-bar bg-warning")
                                                     .attr("style", "width: " + percent * 100 + "%;")
+                                                    .text(100 * percent + "%" + " / " + count + " vote(s)")
                                             )
                                     )
                             )
                     )
-
                     // $("#answers").append(player_name + " voted for " + option + "<br/>")
+                }
+
+                for(player_id in state.payload.answers){
+                    var player = get_player(player_id)
+                    var answer_id = state.payload.answers[player_id]
+                    var option = question.options[answer_id].text
+
+                    $("#everybody-answers").append(
+                        $("<tr>")
+                            .append(
+                                $("<td>")
+                                    .text(player.name)
+                                    .css("font-weight", "bold")
+                            )
+                            .append(
+                                $("<td>")
+                                    .text(option)
+                            )
+                    )
                 }
 
                 // $("#answers").text(state.payload.answers)
@@ -124,7 +150,9 @@
                     $("<tr>")
                         .append(
                             $("<td>")
-                                .html(player.last_ping > 3 ? player.name + " <i style='color:gray;'>(bad connection)</i>" : player.name)
+                                .append(player.name)
+                                .append(player.last_ping > 3 ? " <i style='color:gray;'>(bad connection)</i>" : "")
+                                .append(player.is_admin ? " <i class=\"bi bi-star-fill\"></i>" : "")
                                 .addClass("list-group-item")
                         )
                 )
@@ -138,14 +166,25 @@
                     if(timeleft < 0) var timeleft = 0
 
                     $("#results-seconds").text(timeleft)
+                    $("#results-skip-wait").text(timeleft + " seconds left...")
                     break
             }
 
             // if admin, allow access to admin panel
             if(payload.is_admin){
                 $("#pregame-admin").removeClass("hide")
+                $("#game-skip-question-btn").removeClass("hide")
             }else{
+                $("#results-wait-timer").removeClass("hide")
+                $("#results-skip-btn").addClass("hide")
                 $("#pregame-admin").addClass("hide")
+            }
+
+            $("#navbar-game-name").text(payload.game_name)
+
+            // check if question was changed/skipped, then force redraw
+            if($("#question-text").text() != state.payload.question.text){
+                switch_screens("question", true)
             }
 
             switch_screens(payload.state.name)
@@ -197,10 +236,19 @@
     submit_answer = function(){
         var answer = Number($("[name=question-answer]:checked").val())
 
+        if(isNaN(answer)){
+            alert("You must select an answer first, and then hit Submit answer.")
+            return
+        }
+
         call("submit_answer", "answer=" + answer)
 
         $("#submit_answer_btn_spinner").removeClass("hide")
         $("#submit_answer_btn").attr("disabled", "disabled")
+    }
+
+    skip_question = function(){
+        call("skip_question")
     }
 
     get_player = function(id){
@@ -211,6 +259,9 @@
 
     skip_results = function(){
         call("skip_results")
+            .fail(function(response){
+                alert("Failed to skip results page: " + response.responseText)
+            })
     }
 
     reset_data = function(){
@@ -253,12 +304,41 @@
         // localStorage.__imagineiff_name = name
     }
 
+    share = function(){
+        navigator.share({
+            "title": game_name,
+            "url": window.location
+        })
+    }
+
     $(document).ready(function(){
         initialize_game()
+
+        if(navigator.share)
+            $("#pregame-sharebutton").removeClass("hide")
+
+        $("#pregame-admin-game-name")
+            .on("keyup", function(){
+                game_name = this.value
+
+                call("set-game-name", "value=" + game_name)
+                    .fail(function(response){
+                        console.log("Failed to set `" + game_name + "` as game name: " + response.responseText)
+                        $("#pregame-admin-game-name").addClass(".is-invalid")
+                    })
+                    .done(function(){
+                        $("#pregame-admin-game-name").removeClass(".is-invalid")
+                    })
+            })
     })
 </script>
 {% endblock %}
 
+{% block navbar %}
+<span class="navbar-brand d-flex align-items-right" id="navbar-game-name">
+  {{ game.name }}
+</span>
+{% endblock %}
 {% block body %}
     <div id="loading">
         <div class="spinner-grow" role="status">
@@ -274,10 +354,20 @@
 
         </div>
 
-        <div class="mb-3">
-          <label for="player_name" class="form-label">Player Name</label>
-          <input type="text" class="form-control" id="player_name" placeholder="Billy Bob, Bonkers Boop, etc...">
-        </div>
+        <form novalidate>
+            <div class="mb-3">
+              <label for="player_name" class="form-label">Player Name</label>
+
+              <div class="input-group has-validation">
+                  <input type="text" class="form-control" id="player_name" placeholder="Billy Bob, Bonkers Boop, etc...">
+
+                  <div class="invalid-feedback">
+                    Please choose a username.
+                  </div>
+              </div>
+            </div>
+
+        </form>
 
         <button onclick="set_name()" class="btn btn-primary" id="save_name_btn">
             <div class="hide spinner-border spinner-border-sm" role="status" id="save_name_btn_spinner">
@@ -287,40 +377,53 @@
         </button>
     </div>
 
-    <div id="pregame" class="hide">
-        <div class="spinner-grow" role="status">
-          <span class="visually-hidden">Waiting for players.</span>
+    <div id="pregame" class="hide" class="container">
+        <div class="text-center">
+            <div class="spinner-grow" role="status">
+              <span class="visually-hidden">Waiting for players.</span>
+            </div>
+            <h1>Waiting for players to join...</h1>
         </div>
-        <h1>Waiting for players to join...</h1>
-        ... and for the games to begin!
 
-        <div id="pregame-admin" class="hide">
-            <h3 data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Game Settings</h3>
+        <div class="row">
 
-            <div class="collapse" id="collapseExample">
+            <div class="col card hide" id="pregame-admin" style="width: 49%; margin-right: 5px;">
+                <div class="card-body">
+                    <h5 class="card-title">Game Settings</h5>
 
-                <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="pregame-admin-game-name" value="{{ game.name }}">
-                  <label for="floatingInput">Game Name</label>
+                        <div class="form-floating mb-3">
+                          <input type="text" class="form-control" id="pregame-admin-game-name" value="{{ game.name }}">
+                          <label for="floatingInput">Game Name</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                          <label for="pregame-admin-max-players" class="form-label">Maximum Players (50)</label>
+                          <input type="range" class="form-range" min="2" max="50" id="pregame-admin-max-players">
+                        </div>
+
+                        <div class="form-floating mb-3">
+                          <label for="pregame-admin-public" class="form-label">Public Game</label>
+                          <input type="checkbox" id="pregame-admin-public">
+                        </div>
+
+                        <button class="btn btn-primary" onclick="start_game()">Start Game</button>
                 </div>
+            </div>
 
-                <div class="form-floating mb-3">
-                  <label for="pregame-admin-max-players" class="form-label">Maximum Players (50)</label>
-                  <input type="range" class="form-range" min="2" max="50" id="pregame-admin-max-players">
+            <div class="col card" style="width: 49%;">
+                <div class="card-body">
+                    <h5 class="card-title">Players</h5>
+                    <table class="table table-striped table-borderless">
+                        <tbody id="player_list">
+
+                        </tbody>
+                    </table>
+
+                    <button class="btn btn-warning hide" onclick="share()" id="pregame-sharebutton">Share</button>
+                    Share the URL with your friends to invite them!
                 </div>
-
             </div>
         </div>
-
-        <h3>Players</h3>
-        <!-- <ul class="list-group" id="player_list"></ul> -->
-        <table class="table table-borderless">
-            <tbody id="player_list">
-
-            </tbody>
-        </table>
-
-        <button class="btn btn-primary" onclick="start_game()">Start Game</button>
     </div>
 
     <div id="question" class="hide">
@@ -333,12 +436,16 @@
             </div>
             Submit Answer
         </button>
+
+        <button class="btn btn-danger hide" onclick="skip_question()" id="game-skip-question-btn">
+            Skip
+        </button>
     </div>
 
     <div id="results" class="hide">
         <h1>The results are in!</h1>
-        <h4 id="results-question-text">Imagineiff Ben was a poop.</h4>
-        <h4 id="results-answer" style="color: green;">A cat!</h4>
+        <h4 id="results-question-text">.</h4>
+        <h4 id="results-answer" style="color: green;">.</h4>
 
         <div>
             <table style="width: 100%;">
@@ -349,23 +456,23 @@
                     </tr>
                 </thead>
                 <tbody id="answers">
-                    <!-- <tr>
-                        <td>Ford F-150</td>
-                        <td>
-                            <div class="progress" style="margin: 25px;">
-                              <div class="progress-bar bg-success" style="width: 25%">
-                                  <div style="float: left;">
-                                      5 votes
-                                  </div>
-                              </div>
-                            </div>
-                        </td>
-                    </tr> -->
+
                 </tbody>
             </table>
         </div>
 
-        <button class="btn btn-primary" onclick="skip_results()">
+        <h3>Everybody's Answers</h3>
+        <table style="width: 100%;" class="table table-striped">
+            <tbody id="everybody-answers">
+
+            </tbody>
+        </table>
+
+        <div id="results-skip-wait" class="hide">
+
+        </div>
+
+        <button class="btn btn-primary" onclick="skip_results()" id="results-skip-btn">
             Skip Now (or wait <span id="results-seconds"></span> seconds)
         </button>
     </div>

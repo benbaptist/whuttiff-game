@@ -16,6 +16,11 @@ class Player:
 
         self.timeout = time.time()
 
+        self.score = 0
+
+    def reset_game(self):
+        self.score = 0
+
     @property
     def last_ping(self):
         return time.time() - self.timeout

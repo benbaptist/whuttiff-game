@@ -39,7 +39,7 @@ class Game:
     def name(self, value):
         self._name = value
 
-        self.log.info("Renaming to: " % value)
+        self.log.info("Renaming to: %s" % value)
 
     @property
     def questions(self):

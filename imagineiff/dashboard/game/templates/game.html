@@ -167,7 +167,7 @@
                         switch_screens("question", true)
                     }
                     break
-                    
+
                 case "results":
                     var timeleft = 60 - Math.floor(state.payload.duration)
                     if(timeleft < 0) var timeleft = 0
@@ -301,7 +301,7 @@
             $("#save_name_btn_spinner").addClass("hide")
             $("#save_name_btn").removeAttr("disabled")
             $("#save_name_error").removeClass("hide")
-            $("#save_name_error").text(data.text)
+            $("#save_name_error").text(data.responseText)
         })
         // localStorage.__imagineiff_name = name
     }
@@ -356,20 +356,13 @@
 
         </div>
 
-        <form novalidate>
-            <div class="mb-3">
-              <label for="player_name" class="form-label">Player Name</label>
+        <div class="mb-3">
+          <label for="player_name" class="form-label">Player Name</label>
 
-              <div class="input-group has-validation">
-                  <input type="text" class="form-control" id="player_name" placeholder="Billy Bob, Bonkers Boop, etc...">
-
-                  <div class="invalid-feedback">
-                    Please choose a username.
-                  </div>
-              </div>
-            </div>
-
-        </form>
+          <div class="input-group">
+              <input type="text" class="form-control" id="player_name" placeholder="Billy Bob, Bonkers Boop, etc...">
+          </div>
+        </div>
 
         <button onclick="set_name()" class="btn btn-primary" id="save_name_btn">
             <div class="hide spinner-border spinner-border-sm" role="status" id="save_name_btn_spinner">
@@ -393,9 +386,13 @@
                 <div class="card-body">
                     <h5 class="card-title">Game Settings</h5>
 
-                        <div class="form-floating mb-3">
+                        <div class="form-floating mb-3 has-validation">
                           <input type="text" class="form-control" id="pregame-admin-game-name" value="{{ game.name }}">
                           <label for="floatingInput">Game Name</label>
+
+                          <div class="invalid-feedback">
+                            Please choose a username.
+                          </div>
                         </div>
 
                         <div class="form-floating mb-3">

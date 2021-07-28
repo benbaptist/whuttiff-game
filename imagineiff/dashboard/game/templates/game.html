@@ -161,6 +161,13 @@
             state = payload.state
 
             switch(state.name){
+                case "question":
+                    // check if question was changed/skipped, then force redraw
+                    if($("#question-text").text() != state.payload.question.text){
+                        switch_screens("question", true)
+                    }
+                    break
+                    
                 case "results":
                     var timeleft = 60 - Math.floor(state.payload.duration)
                     if(timeleft < 0) var timeleft = 0
@@ -181,11 +188,6 @@
             }
 
             $("#navbar-game-name").text(payload.game_name)
-
-            // check if question was changed/skipped, then force redraw
-            if($("#question-text").text() != state.payload.question.text){
-                switch_screens("question", true)
-            }
 
             switch_screens(payload.state.name)
         })

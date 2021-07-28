@@ -11,6 +11,14 @@ from imagineiff.engine.states.results import StateResults
 blueprint_ajax = Blueprint("ajax", __name__,
         template_folder="templates")
 
+def safe_chars_check(value):
+    allowed_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    allowed_chars += "0123456789_-.,[]{}|!?;:'\" "
+
+    for char in value:
+        if char not in allowed_chars:
+            raise ValueError("Invalid characters found")
+
 @blueprint_ajax.before_request
 def before_request():
     g.app = current_app._main
@@ -31,6 +39,11 @@ def method(method):
     if method == "join":
         player_name = request.args["player_name"]
         game_id = request.args["game_id"]
+
+        try:
+            safe_chars_check(player_name)
+        except ValueError:
+            return "Invalid characters in your username.", 400
 
         assert len(player_name) < 32 and len(player_name) > 2, "Invalid name length"
 
@@ -67,7 +80,7 @@ def method(method):
     elif method == "skip_question":
         if not g.player.is_admin:
             return "Unauthorized", 403
-            
+
         g.game.skip_question()
 
     elif method == "skip_results":
@@ -83,20 +96,18 @@ def method(method):
         if not g.player.is_admin:
             return "Unauthorized", 403
 
-        allowed_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        allowed_chars += "0123456789_-.,[]{}|!?;:'\" "
-
         game_name = request.args["value"]
 
-        for char in game_name:
-            if char not in allowed_chars:
-                return "Bad character", 400
+        try:
+            safe_chars_check(game_name)
+        except ValueError:
+            return "Bad character", 400
 
         if len(game_name) > 32:
             return "Too long", 400
 
         if len(game_name) < 4:
-            return "Must be at least 5 characters", 400
+            return "Must be at least 4 characters", 400
 
         g.game.name = game_name
 

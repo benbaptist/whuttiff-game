@@ -326,10 +326,11 @@
                 call("set-game-name", "value=" + game_name)
                     .fail(function(response){
                         console.log("Failed to set `" + game_name + "` as game name: " + response.responseText)
-                        $("#pregame-admin-game-name").addClass(".is-invalid")
+                        $("#pregame-admin-game-name").addClass("is-invalid")
+                        $("#pregame-admin-game-name").nextAll()[1].innerHTML = response.responseText
                     })
                     .done(function(){
-                        $("#pregame-admin-game-name").removeClass(".is-invalid")
+                        $("#pregame-admin-game-name").removeClass("is-invalid")
                     })
             })
     })
@@ -391,7 +392,7 @@
                           <label for="floatingInput">Game Name</label>
 
                           <div class="invalid-feedback">
-                            Please choose a username.
+                              Error occurred.
                           </div>
                         </div>
 

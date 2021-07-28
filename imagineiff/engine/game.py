@@ -136,7 +136,9 @@ class Game:
             # Check if all players answered
             if len(self.players) == len(question.answers):
                 self.state = StateResults(question)
-                self.log.info("Everyone answered.")
+                self.log.info("And the results are in...")
+
+                # Calculate winners, add up points here
 
         if type(self.state) == StateResults:
             if self.state.duration > 60:

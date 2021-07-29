@@ -17,6 +17,11 @@ class Player:
         self.timeout = time.time()
 
         self.score = 0
+        # Unimplemented, will be used for checking if players are inactive
+        self.rounds_since_answering = 0
+
+        self.score_percent = None
+        self.leading = False
 
     def reset_game(self):
         self.score = 0

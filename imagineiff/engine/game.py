@@ -20,7 +20,13 @@ class Game:
 
         self._questions = copy.deepcopy(Questions)
 
+        # Game Settings
         self._name = generate_sentence(2)
+        self.max_players = 50
+        self.public = True
+        self.tta = 120
+        self.max_score = 10
+        self.mode = None
 
         self.players = []
         self.removed_players = []
@@ -70,7 +76,7 @@ class Game:
             random.choice(self.players)
         )
 
-        self.state = StateQuestion(question)
+        self.state = StateQuestion(question, self.tta)
 
     def skip_results(self):
         assert type(self.state) == StateResults, "Not in results?"
@@ -122,6 +128,32 @@ class Game:
 
             return
 
+        # Check & balance player scores, percents, determine leader
+        leading_player = (None, 0)
+        total_points = 0
+        for player in self.players:
+            if player.score == None:
+                return
+
+            if player.score > leading_player[1]:
+                leading_player = (player, player.score)
+
+            total_points += player.score
+
+        for player in self.players:
+            if player.score == None:
+                return
+
+            if total_points == 0:
+                player.score_percent = 0
+            else:
+                player.score_percent = player.score / float(total_points)
+
+            if leading_player[0] == player:
+                player.leading = True
+            else:
+                player.leading = False
+
         # Check player pings, remove inactive players
         for player in self.players:
             if player.last_ping > 60:
@@ -139,6 +171,11 @@ class Game:
                 self.log.info("And the results are in...")
 
                 # Calculate winners, add up points here
+                for player_id in question.winners:
+                    player = self.get_player(player_id)
+                    player.score += 1
+
+                    self.log.info("%s gets a point" % player.name)
 
         if type(self.state) == StateResults:
             if self.state.duration > 60:

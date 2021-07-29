@@ -1,14 +1,20 @@
-- [ ] Announce winners each round
-- [ ] Handle ties
+- [x] Announce winners each round
+- [x] Handle ties
+- [ ] Kick inactive players
 - [ ] Better UI
     - [ ] Pre-Game Settings
         - [ ] Private/Public
         - [x] Game name
         - [ ] Max players
+        - [ ] Max score to play to
+        - [ ] Adjustable tie-handling; allow player to be tie breaker or everybody wins
+        - [ ] Additional game modes
+            - [ ] Roast mode, where only one player is the center of attention for the questions
     - [ ] Upon submitting answer, it should remove the radio buttons and make it obvious that the answer was submitted
     - [ ] Player list during game
         - [ ] Ability to kick players from game
         - [ ] Shows when people are lagging
-- [ ] Chromecast Support
+    - [ ] Way for admin to kick players
 - [ ] Fancier animations
 - [ ] Player minimum to 3 players per game
+- [ ] Chromecast Support

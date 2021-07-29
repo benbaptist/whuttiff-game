@@ -21,29 +21,46 @@ class Question:
         return tally
 
     @property
-    def winning_answer(self):
+    def winning_answers(self):
+        answers = []
+
+        for answer in self.tally:
+            count = self.tally[answer][0]
+            answers.append((count, answer))
+
+        answers.sort()
+        answers.reverse()
+
+        winning_answers = []
+
         most_id = 0
         most_count = 0
 
-        for answer in self.tally:
-            # Compute the option with the most votes
-            count = self.tally[answer][0]
+        for i, answer in enumerate(answers):
+            # This is obviously the winning answer. due to the sorting order
+            if i == 0:
+                most_count, most_id = answer
 
-            if count > most_count:
-                most_id = answer
-                most_count = count
+                winning_answers.append(most_id)
+            else:
+                count, id = answer
 
-        return most_id
+                # print("%s-way tie!" % int(len(winning_answers) + 1))
+
+                if count == most_count:
+                    winning_answers.append(id)
+                    
+        return winning_answers
 
     @property
     def winners(self):
         winners = []
-        winning_answer = self.winning_answer
+        winning_answers = self.winning_answers
 
         for player_id in self.answers:
             answer = self.answers[player_id]
 
-            if answer == winning_answer:
+            if answer in winning_answers:
                 winners.append(player_id)
 
         return winners

@@ -130,10 +130,11 @@ def method(method):
             if player.score == None:
                 return
 
-            scoreboard[player.id] = player.score
-
-        # if type(g.game.state) == StateQuestion:
-        #     question = g.game.state.json
+            scoreboard[player.id] = {
+                "score": player.score,
+                "percent": player.score_percent,
+                "leading": player.leading
+            }
 
         return json.dumps({
             "id": g.game.id,

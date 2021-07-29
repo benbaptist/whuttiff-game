@@ -71,18 +71,27 @@
                 // draw results screen
                 var question = state.payload.question
                 $("#results-question-text").text(question.text)
-                $("#results-answer").text(question.options[state.payload.winning_answer].text)
+
+                if(state.payload.winning_answers.length == 1)
+                    $("#results-answer").text(question.options[state.payload.winning_answers[0]].text)
+                else
+                    $("#results-answer").text("It's a tie!")
 
                 $("#answers").html("")
                 $("#everybody-answers").html("")
+                $("#results-scoreboard").html("")
 
+                // draw answer tally
                 for(answer_id in state.payload.tally){
+                    var answer_id = Number(answer_id)
                     // var answer_id = state.payload.answers[player_id]
                     // var player = get_player(player_id)
                     // var player_name = player.name
                     var count = state.payload.tally[answer_id][0]
                     var percent = state.payload.tally[answer_id][1]
                     var option = question.options[answer_id].text
+
+                    // console.log([state.payload.winning_answers.includes(answer_id), answer_id, option, count])
 
                     $("#answers").append(
                         $("<tr>")
@@ -98,16 +107,16 @@
                                             .attr("style", "margin: 25px;")
                                             .append(
                                                 $("<div>")
-                                                    .addClass(answer_id == state.payload.winning_answer ? "progress-bar bg-success" : "progress-bar bg-warning")
-                                                    .attr("style", "width: " + percent * 100 + "%;")
-                                                    .text(100 * percent + "%" + " / " + count + " vote(s)")
+                                                    .addClass(state.payload.winning_answers.includes(answer_id) ? "progress-bar bg-success" : "progress-bar bg-warning")
+                                                    .attr("style", "width: " + Math.floor(percent * 100) + "%;")
+                                                    .text(Math.floor(percent * 100) + "%" + " / " + count + " vote(s)")
                                             )
                                     )
                             )
                     )
-                    // $("#answers").append(player_name + " voted for " + option + "<br/>")
                 }
 
+                // draw everybody's answers
                 for(player_id in state.payload.answers){
                     var player = get_player(player_id)
                     var answer_id = state.payload.answers[player_id]
@@ -127,6 +136,39 @@
                     )
                 }
 
+                // draw scoreboard
+                for(player_id in game_status.scoreboard){
+                    var scores = game_status.scoreboard[player_id]
+                    var score = scores.score
+                    var score_percent = scores.percent
+                    var leading = scores.leading
+
+                    var player = get_player(player_id)
+                    var player_name = player.name
+
+                    $("#results-scoreboard").append(
+                        $("<tr>")
+                            .append(
+                                $("<td>")
+                                    .text(player_name)
+                            )
+                            .append(
+                                $("<td>")
+                                    .append(
+                                        $("<div>")
+                                            .addClass("progress")
+                                            .attr("style", "margin: 25px;")
+                                            .append(
+                                                $("<div>")
+                                                    .addClass(leading ? "progress-bar bg-success" : "progress-bar bg-warning")
+                                                    .attr("style", "width: " + Math.floor(score_percent * 100) + "%;")
+                                                    .text(score)
+                                            )
+                                    )
+                            )
+                    )
+                }
+
                 // $("#answers").text(state.payload.answers)
                 break
         }
@@ -135,10 +177,12 @@
     }
 
     game_loop = function(){
-        // poll latest game info
+        // poll game status
+        // because websockets are boooorrrriinnnggg
         var data = call("status")
         .done(function(data){
             var payload = JSON.parse(data)
+            game_status = payload
 
             players = payload.players
 
@@ -189,7 +233,7 @@
 
             $("#navbar-game-name").text(payload.game_name)
 
-            switch_screens(payload.state.name)
+            switch_screens(state.name)
         })
         .fail(function(){
             window.location = "/?error"
@@ -282,6 +326,7 @@
         .done(function(data){
             // good to go, grab player id from here
             var payload = JSON.parse(data)
+            status = payload
 
             var player_name = payload.player.name
             var player_id = payload.player.id
@@ -398,12 +443,12 @@
 
                         <div class="form-floating mb-3">
                           <label for="pregame-admin-max-players" class="form-label">Maximum Players (50)</label>
-                          <input type="range" class="form-range" min="2" max="50" id="pregame-admin-max-players">
+                          <input type="range" class="form-range" min="2" max="50" value="50" id="pregame-admin-max-players">
                         </div>
 
                         <div class="form-floating mb-3">
                           <label for="pregame-admin-public" class="form-label">Public Game</label>
-                          <input type="checkbox" id="pregame-admin-public">
+                          <input type="checkbox" id="pregame-admin-public" checked>
                         </div>
 
                         <button class="btn btn-primary" onclick="start_game()">Start Game</button>
@@ -475,5 +520,18 @@
         <button class="btn btn-primary" onclick="skip_results()" id="results-skip-btn">
             Skip Now (or wait <span id="results-seconds"></span> seconds)
         </button>
+
+        <h3>Scoreboard</h3>
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th style="width: 50%;"></th>
+                    <th style="width: 50%;"></th>
+                </tr>
+            </thead>
+            <tbody id="results-scoreboard">
+
+            </tbody>
+        </table>
     </div>
 {% endblock %}

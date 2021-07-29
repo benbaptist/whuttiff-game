@@ -13,7 +13,7 @@ class StateResults:
             },
             "answers": self.question.answers,
             "duration": self.duration,
-            "winning_answer": self.winning_answer,
+            "winning_answers": self.winning_answers,
             "winners": self.winners,
             "tally": self.tally
         }
@@ -23,8 +23,8 @@ class StateResults:
         return self.question.tally
 
     @property
-    def winning_answer(self):
-        return self.question.winning_answer
+    def winning_answers(self):
+        return self.question.winning_answers
 
     @property
     def winners(self):

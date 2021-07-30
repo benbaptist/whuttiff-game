@@ -103,8 +103,8 @@ Questions = [
             {"text": "Ignore it and turn up the radio"},
             {"text": "Honk 'em right back"},
             {"text": "Wink and lick the window"},
-            {"text": "Give a geniue apologetic awave"},
-            {"text": "Recorfd the license plate and call the police"}
+            {"text": "Give a genuine apologetic wave"},
+            {"text": "Record the license plate and call the police"}
         ]
     },
     {
@@ -141,6 +141,17 @@ Questions = [
             {"text": "Brown"},
             {"text": "White"},
             {"text": "Black (aka a lack of color)"}
+        ]
+    },
+    {
+        "question": "Whuttiff __name__ were a hot dog condiment. Which would they be?",
+        "options": [
+            {"text": "Ketchup"},
+            {"text": "Mustard"},
+            {"text": "Dieced Onions"},
+            {"text": "Relish"},
+            {"text": "Jalapenos"},
+            {"text": "Celery salt"}
         ]
     }
 ]

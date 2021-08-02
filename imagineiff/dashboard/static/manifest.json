@@ -1,0 +1,17 @@
+{
+  "name": "Whuttiff?",
+  "short_name": "Whuttiff",
+  "theme_color": "#5f5f5f",
+  "background_color": "#2196f3",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/static/img/logo.x512.png",
+      "size": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

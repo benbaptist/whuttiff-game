@@ -68,7 +68,7 @@ Questions = [
             {"text": "Cell Phone"},
             {"text": "Alcohol"},
             {"text": "Music"},
-            {"text": "People"},
+            {"text": "Driving"},
             {"text": "Social Media"},
             {"text": "Laptop"},
         ]
@@ -133,14 +133,13 @@ Questions = [
     {
         "question": "Whuttiff __name__ were a color. Which would match them most?",
         "options": [
-            {"text": "Red"},
-            {"text": "Yellow"},
+            {"text": "Gold"},
+            {"text": "Violet"},
             {"text": "Green"},
-            {"text": "Blue"},
-            {"text": "Purple"},
-            {"text": "Brown"},
-            {"text": "White"},
-            {"text": "Black (aka a lack of color)"}
+            {"text": "Magenta"},
+            {"text": "Rose Gold"},
+            {"text": "Silver"},
+            {"text": "Black"}
         ]
     },
     {
@@ -158,9 +157,21 @@ Questions = [
         "question": "Whuttiff __name__ were a plant. Which would they be?",
         "options": [
             {"text": "Dandelion"},
-            {"text": "Toulip"},
-            {"text": "Oak Tree"},
+            {"text": "Tulip"},
+            {"text": "Daisies"},
+            {"text": "Lilies"},
             {"text": "Powerplant"}
+        ]
+    },
+    {
+        "question": "Whuttiff __name__ were an 80s a movie. Which suits them best?",
+        "options": [
+            {"text": "Beetlejuice"},
+            {"text": "The Shining"},
+            {"text": "Die Hard"},
+            {"text": "The Breakfest Club"},
+            {"text": "E.T. Batteries Not Included"},
+            {"text": "Back to the Future"}
         ]
     }
 ]

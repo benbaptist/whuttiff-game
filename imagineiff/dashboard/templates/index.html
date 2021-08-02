@@ -6,6 +6,9 @@
 
     <hr/>
     {% for game in games %}
+        {% if not game.public %}
+            {% continue %}
+        {% endif %}
         <a href="/game/{{ game.id }}">
             {{ game.name }}
             <span class="badge bg-secondary">{{ game.players|length }} players</span>

@@ -67,7 +67,10 @@ def method(method):
         if not g.player.is_admin:
             return "Unauthorized", 403
 
-        g.game.start()
+        try:
+            g.game.start()
+        except AssertionError as e:
+            return str(e), 400
 
     elif method == "submit_answer":
         if not g.player:
@@ -89,27 +92,60 @@ def method(method):
 
         g.game.skip_results()
 
-    elif method == "set-game-name":
+    elif method == "set-setting":
         if not g.game:
             return "Nope", 404
 
         if not g.player.is_admin:
             return "Unauthorized", 403
 
-        game_name = request.args["value"]
+        name = request.args["name"]
+        value = request.args["value"]
 
-        try:
-            safe_chars_check(game_name)
-        except ValueError:
-            return "Bad character", 400
+        print("%s / %s" % (name, value))
 
-        if len(game_name) > 32:
-            return "Too long", 400
+        if name == "name":
+            try:
+                safe_chars_check(value)
+            except ValueError:
+                return "Bad character", 400
 
-        if len(game_name) < 4:
-            return "Must be at least 4 characters", 400
+            if len(value) > 32:
+                return "Too long", 400
 
-        g.game.name = game_name
+            if len(value) < 4:
+                return "Must be at least 4 characters", 400
+
+            g.game.name = value
+        elif name == "public":
+            try:
+                if value == "true":
+                    value = True
+                else:
+                    value = False
+            except ValueError:
+                return "Invalid value", 400
+
+            g.game.public = value
+        elif name == "max-score":
+            try:
+                value = int(value)
+            except ValueError:
+                return "Invalid value", 400
+
+            g.game.max_score = value
+        elif name == "max-players":
+            try:
+                value = int(value)
+            except ValueError:
+                return "Invalid value", 400
+
+            if value > 50:
+                return "Too many players", 400
+            elif value < 3:
+                return "Too few players", 400
+
+            g.game.max_players = value
 
     elif method == "status":
         if not g.game:

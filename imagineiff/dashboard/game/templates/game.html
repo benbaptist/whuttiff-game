@@ -33,6 +33,10 @@
             "&" + args)
     }
 
+    set_setting = function(name, value){
+        return call("set-setting", "name=" + name + "&value=" + value)
+    }
+
     last_screen = null
 
     switch_screens = function(screen, force_redraw){
@@ -277,6 +281,9 @@
 
     start_game = function(){
         call("start")
+            .fail(function(response){
+                alert(response.responseText)
+            })
     }
 
     submit_answer = function(){
@@ -364,11 +371,29 @@
         if(navigator.share)
             $("#pregame-sharebutton").removeClass("hide")
 
+        $("#pregame-admin-max-score")
+            .on("input", function(){
+                set_setting("max-score", this.value)
+
+                $("#pregame-admin-max-score-text").text(this.value)
+            })
+
+        $("#pregame-admin-max-players")
+            .on("input", function(){
+                set_setting("max-players", this.value)
+
+                $("#pregame-admin-max-players-text").text(this.value)
+            })
+        $("#pregame-admin-public")
+            .on("change", function(){
+                set_setting("public", this.checked)
+            })
+
         $("#pregame-admin-game-name")
             .on("keyup", function(){
                 game_name = this.value
 
-                call("set-game-name", "value=" + game_name)
+                set_setting("name", game_name)
                     .fail(function(response){
                         console.log("Failed to set `" + game_name + "` as game name: " + response.responseText)
                         $("#pregame-admin-game-name").addClass("is-invalid")
@@ -442,13 +467,19 @@
                         </div>
 
                         <div class="form-floating mb-3">
-                          <label for="pregame-admin-max-players" class="form-label">Maximum Players (50)</label>
-                          <input type="range" class="form-range" min="2" max="50" value="50" id="pregame-admin-max-players">
+                          <label for="pregame-admin-max-players" class="form-label">Maximum Players (<span id="pregame-admin-max-players-text">{{ game.max_players }}</span>)</label>
+                          <input type="range" class="form-range" min="3" max="50" value="{{ game.max_players }}" id="pregame-admin-max-players">
                         </div>
 
                         <div class="form-floating mb-3">
                           <label for="pregame-admin-public" class="form-label">Public Game</label>
-                          <input type="checkbox" id="pregame-admin-public" checked>
+                          <input type="checkbox" id="pregame-admin-public"{% if game.public %} checked{% endif %}>
+                        </div>
+
+                        <hr/>
+                        <div class="form-floating mb-3">
+                          <label for="pregame-admin-max-score" class="form-label">Winning Score (<span id="pregame-admin-max-score-text">{{ game.max_score }}</span>)</label>
+                          <input type="range" class="form-range" min="3" max="100" value="{{ game.max_score }}" id="pregame-admin-max-score">
                         </div>
 
                         <button class="btn btn-primary" onclick="start_game()">Start Game</button>
@@ -464,7 +495,7 @@
                         </tbody>
                     </table>
 
-                    <button class="btn btn-warning hide" onclick="share()" id="pregame-sharebutton">Share</button>
+                    <button class="btn btn-warning hide" onclick="share()" id="pregame-sharebutton">Share</button><br/>
                     Share the URL with your friends to invite them!
                 </div>
             </div>

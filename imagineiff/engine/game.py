@@ -23,9 +23,9 @@ class Game:
         # Game Settings
         self._name = generate_sentence(2)
         self.max_players = 50
-        self.public = True
+        self.public = False
         self.tta = 120
-        self.max_score = 10
+        self.max_score = 15
         self.mode = None
 
         self.players = []
@@ -92,6 +92,9 @@ class Game:
         self.pick_question()
 
     def join(self, name):
+        if len(self.players) == self.max_players:
+            raise Exception("Game is full!")
+
         player = Player(
             name,
             len(self.players) == 0 # Makes player admin if no other players

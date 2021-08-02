@@ -25,6 +25,7 @@ class Dashboard:
         self.app.config['SECRET_KEY'] = ""
         self.app.config['MINIFY_PAGE'] = True
         self.app.config['TEMPLATES_AUTO_RELOAD'] = True
+        self.app.jinja_env.add_extension('jinja2.ext.loopcontrols')
         self.app._main = main
 
         self.socketio = SocketIO(self.app)

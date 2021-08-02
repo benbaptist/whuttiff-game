@@ -3,18 +3,20 @@
 - [ ] Kick inactive players
 - [ ] Better UI
     - [ ] Pre-Game Settings
-        - [ ] Private/Public
+        - [x] Private/Public
         - [x] Game name
-        - [ ] Max players
+        - [x] Max players
         - [ ] Max score to play to
         - [ ] Adjustable tie-handling; allow player to be tie breaker or everybody wins
         - [ ] Additional game modes
+            - [ ] Truly random mode, where any player is the subject
+            - [ ] Random, but everyone gets a chance to be subject before being a subject again
             - [ ] Roast mode, where only one player is the center of attention for the questions
     - [ ] Upon submitting answer, it should remove the radio buttons and make it obvious that the answer was submitted
     - [ ] Player list during game
-        - [ ] Ability to kick players from game
+        - [ ] Ability for admin to kick players from game
         - [ ] Shows when people are lagging
-    - [ ] Way for admin to kick players
+        - [ ] Shows scores throughout game
 - [ ] Fancier animations
-- [ ] Player minimum to 3 players per game
+- [ ] Increase player minimum to 3 players per game once development slows down
 - [ ] Chromecast Support

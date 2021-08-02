@@ -12,11 +12,13 @@ Questions = [
     {
         "question": "Whuttiff __name__ was a vehicle. What kind of vehicle would they be?",
         "options": [
-            {"text": "Ford F-150"},
+            {"text": "Tesla Roadster"},
             {"text": "Helicopter"},
-            {"text": "Chevy Camaro"},
+            {"text": "Lamborghini"},
+            {"text": "Ford F-150"},
+            {"text": "Toyota Prius"},
             {"text": "Honda Civic"},
-            {"text": "A Bicycle"},
+            {"text": "A Bicycle"}
         ]
     },
     {
@@ -27,6 +29,7 @@ Questions = [
             {"text": "Fridge"},
             {"text": "Stove"},
             {"text": "Oven"},
+            {"text": "Blender"},
             {"text": "Air Fryer"},
         ]
     },
@@ -34,8 +37,10 @@ Questions = [
         "question": "Whuttiff __name__ were a cooking utensil?",
         "options": [
             {"text": "Spatula"},
-            {"text": "2"},
-            {"text": "3"},
+            {"text": "Fork"},
+            {"text": "Knife"},
+            {"text": "Meat Pounder"},
+            {"text": "Whisk"},
         ]
     },
     {

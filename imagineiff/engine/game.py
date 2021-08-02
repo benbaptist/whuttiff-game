@@ -156,7 +156,8 @@ class Game:
 
         # Check player pings, remove inactive players
         for player in self.players:
-            if player.last_ping > 60:
+            # Timeout after 5 minutes
+            if player.last_ping > 60 * 5:
                 self.log.warning("Removing inactivate player %s" % player)
 
                 self.removed_players.append(player)

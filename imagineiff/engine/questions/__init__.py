@@ -1,16 +1,17 @@
 Questions = [
     {
-        "question": "Whuttiff __name__ was a meme. What meme would they be?",
+        "question": "Whuttiff __name__ was a meme? What meme would they be?",
         "options": [
             {"text": "LOLCats"},
             {"text": "Scumbag Steve"},
             {"text": "Nyan Cat"},
             {"text": "Charlie Bit My Finger"},
             {"text": "ALL YOUR BASE ARE BELONG TO US"},
+            {"text": "This is a stupid question."}
         ]
     },
     {
-        "question": "Whuttiff __name__ was a vehicle. What kind of vehicle would they be?",
+        "question": "Whuttiff __name__ was a vehicle? What kind of vehicle would they be?",
         "options": [
             {"text": "Tesla Roadster"},
             {"text": "Helicopter"},
@@ -68,7 +69,7 @@ Questions = [
         ]
     },
     {
-        "question": "Whuttiff __name__ were on a deserted island - what would they miss the most?",
+        "question": "Whuttiff __name__ were on a deserted island? What would they miss the most?",
         "options": [
             {"text": "Cell Phone"},
             {"text": "Alcohol"},
@@ -79,7 +80,7 @@ Questions = [
         ]
     },
     {
-        "question": "Whuttiff __name__ had a flat tire, what would they do?",
+        "question": "Whuttiff __name__ had a flat tire? What would they do?",
         "options": [
             {"text": "Call a Friend"},
             {"text": "Change It"},
@@ -90,7 +91,7 @@ Questions = [
         ]
     },
     {
-        "question": "Whuttiff __name__ was a website. Which would they be?",
+        "question": "Whuttiff __name__ was a website? Which would they be?",
         "options": [
             {"text": "Google"},
             {"text": "YouTube"},
@@ -102,7 +103,7 @@ Questions = [
         ]
     },
     {
-        "question": "Whuttiff __name__ were honked at by an impatient driver. How would they react?",
+        "question": "Whuttiff __name__ were honked at by an impatient driver? How would they react?",
         "options": [
             {"text": "Get out of the car and threaten the driver"},
             {"text": "Ignore it and turn up the radio"},
@@ -113,7 +114,7 @@ Questions = [
         ]
     },
     {
-        "question": "Whuttiff __name__ were having their photo taken. What would the photo be like?",
+        "question": "Whuttiff __name__ were having their photo taken? What would the photo be like?",
         "options": [
             {"text": "Police mug shot"},
             {"text": "Pulling a funny face"},
@@ -124,7 +125,7 @@ Questions = [
         ]
     },
     {
-        "question": "Whuttiff __name__ were on TV. What TV show would they be on?",
+        "question": "Whuttiff __name__ were on TV? What TV show would they be on?",
         "options": [
             {"text": "Friends"},
             {"text": "Jeopardy"},
@@ -136,7 +137,7 @@ Questions = [
         ]
     },
     {
-        "question": "Whuttiff __name__ were a color. Which would match them most?",
+        "question": "Whuttiff __name__ were a color? Which would match them most?",
         "options": [
             {"text": "Gold"},
             {"text": "Violet"},
@@ -148,7 +149,7 @@ Questions = [
         ]
     },
     {
-        "question": "Whuttiff __name__ were a hot dog condiment. Which would they be?",
+        "question": "Whuttiff __name__ were a hot dog condiment? Which would they be?",
         "options": [
             {"text": "Ketchup"},
             {"text": "Mustard"},
@@ -159,7 +160,7 @@ Questions = [
         ]
     },
     {
-        "question": "Whuttiff __name__ were a plant. Which would they be?",
+        "question": "Whuttiff __name__ were a plant? Which would they be?",
         "options": [
             {"text": "Dandelion"},
             {"text": "Tulip"},
@@ -169,7 +170,7 @@ Questions = [
         ]
     },
     {
-        "question": "Whuttiff __name__ were an 80s a movie. Which suits them best?",
+        "question": "Whuttiff __name__ were an 80s a movie? Which suits them best?",
         "options": [
             {"text": "Beetlejuice"},
             {"text": "The Shining"},
@@ -177,6 +178,30 @@ Questions = [
             {"text": "The Breakfest Club"},
             {"text": "E.T. Batteries Not Included"},
             {"text": "Back to the Future"}
+        ]
+    },
+    {
+        "question": "Whuttiff __name__ were best friends with a movie star? Who would it be?",
+        "options": [
+            {"text": "Jack Black"},
+            {"text": "Tom Hanks"},
+            {"text": "Morgan Freeman"},
+            {"text": "Leonardo DiCaprio"},
+            {"text": "Meryl Streep"},
+            {"text": "Samuel L. Jackson"},
+            {"text": "Robin Williams"},
+        ]
+    },
+    {
+        "question": "Whuttiff __name__ were a song? Who would it be?",
+        "options": [
+            {"text": "Walking on Sunshine - Katrina and the Waves"},
+            {"text": "Uptown Funk - Bruno Mars"},
+            {"text": "Paint It, Black - Rolling Stones"},
+            {"text": "Happy - Pharrell Williams"},
+            {"text": "Billie Jean - Michael Jackson"},
+            {"text": "bad guy - Billie Ellish"},
+            {"text": "Stayin' Alive - Bee Gees"},
         ]
     }
 ]

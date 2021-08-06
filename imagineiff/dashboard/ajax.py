@@ -86,6 +86,12 @@ def method(method):
 
         g.game.skip_question()
 
+    elif method == "skip_winners":
+        if not g.player.is_admin:
+            return "Unauthorized", 403
+
+        g.game.skip_winners()
+
     elif method == "skip_results":
         if not g.player.is_admin:
             return "Unauthorized", 403

@@ -11,6 +11,7 @@ from imagineiff.engine.questions.question import Question
 from imagineiff.engine.states.pregame import StatePregame
 from imagineiff.engine.states.statequestion import StateQuestion
 from imagineiff.engine.states.results import StateResults
+from imagineiff.engine.states.winner import StateWinner
 
 from imagineiff.words import generate_sentence
 
@@ -81,7 +82,20 @@ class Game:
     def skip_results(self):
         assert type(self.state) == StateResults, "Not in results?"
 
-        self.log.info("Skipping results screen")
+        winners = []
+
+        for player in self.players:
+            if player.score >= self.max_score:
+                self.log.info("%s declared a winner" % player.name)
+                winners.append(player)
+
+        if len(winners) > 0:
+            self.log.info("We've got winners. Game over.")
+            self.state = StateWinner(winners, self.players)
+
+            return
+
+        self.log.info("Moving on from results screen")
 
         self.pick_question()
 
@@ -90,6 +104,13 @@ class Game:
 
         self.log.info("Skipping question")
         self.pick_question()
+
+    def skip_winners(self):
+        assert type(self.state) == StateWinner, "Not in winner?"
+
+        self.state = StatePregame()
+
+        self.log.info("Starting pregame again")
 
     def join(self, name):
         if len(self.players) == self.max_players:
@@ -126,7 +147,7 @@ class Game:
             # If it goes ten minutes without any players, consider
             # this game dead and destroy it.
             if time.time() - self.time_since_no_players > 60 * 10:
-                self.log.warning("This game needs to be removed.")
+                self.log.warning("This game is dead; being destroyed now.")
                 self.dead = True
 
             return
@@ -171,7 +192,6 @@ class Game:
 
             # Check if all players answered
             if len(self.players) == len(question.answers):
-                self.state = StateResults(question)
                 self.log.info("And the results are in...")
 
                 # Calculate winners, add up points here
@@ -180,6 +200,8 @@ class Game:
                     player.score += 1
 
                     self.log.info("%s gets a point" % player.name)
+                    
+                self.state = StateResults(question)
 
         if type(self.state) == StateResults:
             if self.state.duration > 60:

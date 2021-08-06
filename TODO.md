@@ -6,7 +6,7 @@
         - [x] Private/Public
         - [x] Game name
         - [x] Max players
-        - [ ] Max score to play to
+        - [x] Max score to play to
         - [ ] Adjustable tie-handling; allow player to be tie breaker or everybody wins
         - [ ] Additional game modes
             - [ ] Truly random mode, where any player is the subject
@@ -17,6 +17,8 @@
         - [ ] Ability for admin to kick players from game
         - [ ] Shows when people are lagging
         - [ ] Shows scores throughout game
+    - [ ] Pause button for admin only
+    - [ ] Allow players to change name
 - [ ] Fancier animations
 - [ ] Increase player minimum to 3 players per game once development slows down
 - [ ] Chromecast Support

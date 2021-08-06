@@ -50,6 +50,7 @@
         $("#pregame").addClass("hide")
         $("#question").addClass("hide")
         $("#results").addClass("hide")
+        $("#winner").addClass("hide")
 
         switch(screen){
             case "pregame":
@@ -112,7 +113,8 @@
                                             .append(
                                                 $("<div>")
                                                     .addClass(state.payload.winning_answers.includes(answer_id) ? "progress-bar bg-success" : "progress-bar bg-warning")
-                                                    .attr("style", "width: " + Math.floor(percent * 100) + "%;")
+                                                    .css("width", Math.floor(percent * 100) + "%")
+                                                    .css("min-width", "25px")
                                                     .text(Math.floor(percent * 100) + "%" + " / " + count + " vote(s)")
                                             )
                                     )
@@ -175,6 +177,40 @@
 
                 // $("#answers").text(state.payload.answers)
                 break
+
+            case "winner":
+                $("#winner").removeClass("hide")
+
+                $("#winner-scoreboard").html("")
+                $("#winner-winners").html("")
+
+                if(state.payload.winners.length == 1)
+                    $("#winner-winners-string").text("And the winner is...")
+                else
+                    $("#winner-winners-string").text("And the winners are...")
+
+                for(i in state.payload.winners){
+                    var player = state.payload.winners[i]
+
+                    if(state.payload.winners.length == 1)
+                        $("#winner-winners").append(player.name)
+                    else if(state.payload.winners.length > 1 && state.payload.winners.length - 1 == i)
+                        $("#winner-winners").append(player.name)
+                    else if(state.payload.winners.length > 1 && state.payload.winners.length > i)
+                        $("#winner-winners").append(player.name + " & ")
+                }
+
+                for(i in state.payload.players){
+                    var player = state.payload.players[i]
+
+                    $("#winner-scoreboard")
+                        .append(
+                            $("<li>")
+                                .append("<b>" +player.name+ "</b> with " + player.score.points + " points, or " + Math.floor(player.score.percent*100) + "%.")
+                        )
+                }
+
+                break
         }
 
         last_screen = screen
@@ -229,10 +265,12 @@
             if(payload.is_admin){
                 $("#pregame-admin").removeClass("hide")
                 $("#game-skip-question-btn").removeClass("hide")
+                $("#winner-admin").removeClass("hide")
             }else{
                 $("#results-wait-timer").removeClass("hide")
                 $("#results-skip-btn").addClass("hide")
                 $("#pregame-admin").addClass("hide")
+                $("#winner-admin").addClass("hide")
             }
 
             $("#navbar-game-name").text(payload.game_name)
@@ -302,6 +340,10 @@
 
     skip_question = function(){
         call("skip_question")
+    }
+
+    skip_winners = function(){
+        call("skip_winners")
     }
 
     get_player = function(id){
@@ -564,5 +606,25 @@
 
             </tbody>
         </table>
+    </div>
+
+    <div id="winner" class="hide">
+        <h1>Game over!</h1>
+
+        <h4 class="text-success">
+            <span id="winner-winners-string">And the winner is...</span>
+            <span id="winner-winners"></span>!
+        </h4>
+
+        <h3>Scoreboard</h3>
+        <ul id="winner-scoreboard">
+
+        </ul>
+
+        <div id="winner-admin" class="hide">
+            <button class="btn btn-success" onclick="skip_winners()">
+                Continue to Next Game
+            </button>
+        </div>
     </div>
 {% endblock %}
